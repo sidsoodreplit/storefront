@@ -76,7 +76,7 @@ export function EditorialHero({
 										className={buttonClassName({
 											asLink: true,
 											size: "lg",
-											variant: primaryCta.variant === "secondary" ? "secondary" : "default",
+											variant: primaryCta.variant === "secondary" ? "secondary" : "glass",
 										})}
 									/>
 								) : null}
