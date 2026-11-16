@@ -18,7 +18,7 @@
 		"lint:fix": "eslint --fix",
 		"lint:design-tokens": "node scripts/check-design-tokens.mjs",
 		"lint:graphql-variants": "node scripts/check-deprecated-product-variants.mjs",
-		"generate": "graphql-codegen --config .graphqlrc.ts",
+		"generate": "graphql-codegen --config .graphqlrc.ts && graphql-codegen --config .graphqlrc.buy-again.ts",
 		"generate:checkout": "graphql-codegen --config src/checkout/graphql/codegen.ts",
 		"generate:all": "pnpm run generate && pnpm run generate:checkout",
 		"test": "vitest",

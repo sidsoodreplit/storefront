@@ -1,18 +1,15 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { getCurrentUserOrders } from "@/lib/account/get-orders";
+import { getBuyAgainOrders } from "@/lib/custom/get-buy-again-orders";
 import { hasAuthSession } from "@/lib/auth/has-auth-session";
-import { OrderRow } from "@/ui/components/account/order-row";
-import { buildOrderRowLabels } from "@/ui/components/account/order-row-labels";
+import { BuyAgainOrders } from "@/ui/components/account/buy-again-orders";
 import { LinkWithChannel } from "@/ui/atoms/link-with-channel";
 import { Button } from "@/ui/components/ui/button";
 import { accountRoutes } from "@/ui/components/account/routes";
 import { AccountOrdersListSkeleton } from "@/ui/components/account/account-skeleton";
 
-const ORDERS_PER_PAGE = 10;
-
 type Props = {
-	params: Promise<{ locale: string }>;
+	params: Promise<{ locale: string; channel: string }>;
 	searchParams: Promise<{ after?: string }>;
 };
 
@@ -25,17 +22,15 @@ export default function AccountOrdersPage({ params, searchParams }: Props) {
 }
 
 async function AccountOrdersContent({ params, searchParams }: Props) {
-	const [{ locale }, { after }] = await Promise.all([params, searchParams]);
+	const [{ locale, channel }, { after }] = await Promise.all([params, searchParams]);
 	const t = await getTranslations({ locale, namespace: "account.orders" });
 	const tErrors = await getTranslations({ locale, namespace: "account.errors" });
-	const tOrder = await getTranslations({ locale, namespace: "account" });
-	const tStatus = await getTranslations({ locale, namespace: "account.orderStatus" });
 
 	if (!(await hasAuthSession())) {
 		return <AccountOrdersError title={t("title")} message={t("signInRequired")} />;
 	}
 
-	const result = await getCurrentUserOrders(locale, ORDERS_PER_PAGE, after);
+	const result = await getBuyAgainOrders(after);
 
 	if (!result.ok) {
 		return <AccountOrdersError title={t("title")} message={tErrors("loadOrdersFailed")} />;
@@ -63,16 +58,7 @@ async function AccountOrdersContent({ params, searchParams }: Props) {
 				</div>
 			) : (
 				<>
-					<div className="space-y-2">
-						{orders.map(({ node: order }) => (
-							<OrderRow
-								key={order.id}
-								order={order}
-								localeSlug={locale}
-								labels={buildOrderRowLabels(tOrder, tStatus, order)}
-							/>
-						))}
-					</div>
+					<BuyAgainOrders orders={orders.map(({ node }) => node)} channel={channel} />
 
 					{pageInfo?.hasNextPage && pageInfo.endCursor && (
 						<div className="flex justify-center pt-2">

@@ -1,0 +1,108 @@
+fragment BuyAgainOrder on Order {
+	id
+	number
+	created
+	statusDisplay
+	channel {
+		slug
+	}
+	total {
+		gross {
+			amount
+			currency
+		}
+	}
+	lines {
+		id
+		productName
+		variantName
+		quantity
+		thumbnail(size: 256, format: WEBP) {
+			url
+			alt
+		}
+		variant {
+			id
+			quantityAvailable
+			pricing {
+				price {
+					gross {
+						amount
+						currency
+					}
+				}
+			}
+			product {
+				isAvailableForPurchase
+			}
+		}
+	}
+}
+
+query BuyAgainOrders($after: String) {
+	me {
+		orders(first: 10, after: $after) {
+			edges {
+				node {
+					...BuyAgainOrder
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+			totalCount
+		}
+	}
+}
+
+query BuyAgainOrderCheck($id: ID!) {
+	me {
+		id
+	}
+	order(id: $id) {
+		...BuyAgainOrder
+		user {
+			id
+		}
+	}
+}
+
+query BuyAgainCart($id: ID!) {
+	checkout(id: $id) {
+		id
+		channel {
+			slug
+		}
+		lines {
+			quantity
+			variant {
+				id
+			}
+		}
+	}
+}
+
+mutation BuyAgainCreateCart($channel: String!, $lines: [CheckoutLineInput!]!) {
+	checkoutCreate(input: { channel: $channel, lines: $lines }) {
+		checkout {
+			id
+		}
+		errors {
+			code
+			message
+		}
+	}
+}
+
+mutation BuyAgainAddLines($id: ID!, $lines: [CheckoutLineInput!]!) {
+	checkoutLinesAdd(id: $id, lines: $lines) {
+		checkout {
+			id
+		}
+		errors {
+			code
+			message
+		}
+	}
+}
