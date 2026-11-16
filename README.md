@@ -31,6 +31,8 @@
 
 ## Why Paper?
 
+<!-- Fork-only pull request access test. No storefront behavior changes. -->
+
 **Ship faster, customize everything.** Paper is a new release—expect some rough edges—but every component is built with real-world e-commerce in mind. This is a foundation you can actually build on.
 
 ### 🛒 Open Checkout (v2)
